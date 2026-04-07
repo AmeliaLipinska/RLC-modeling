@@ -10,7 +10,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Symulator RLC - Parametry")
+        self.setWindowTitle("Symulator RLC")
         self.resize(1200, 600) # a wide window for starters
 
         #---------------------PICTURE----------------------
@@ -70,10 +70,19 @@ class MainWindow(QMainWindow):
         self.button_square = QPushButton("Sygnał prostokątny")
         self.button_triangle = QPushButton("Sygnał trójkątny")
 
+        self.input_A=QLineEdit()
+        self.input_F=QLineEdit()
+
         self.signal_layout.addWidget(self.button_sin)
         self.signal_layout.addWidget(self.button_square)
         self.signal_layout.addWidget(self.button_triangle)
 
+        self.signal_layout.addWidget(QLabel("Amplituda A [V]:"))
+        self.signal_layout.addWidget(self.input_A)
+
+        self.signal_layout.addWidget(QLabel("Czestotliwosc [Hz]:"))
+        self.signal_layout.addWidget(self.input_F)
+        
         self.signal_group.setLayout(self.signal_layout)
         self.right_panel.addWidget(self.signal_group)
 
