@@ -6,6 +6,8 @@ from PySide6.QtCore import Qt
 
 from signals import signal_sin, signal_square, signal_triangle
 
+from PySide6.QtGui import QDoubleValidator
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -89,7 +91,16 @@ class MainWindow(QMainWindow):
         self.button_sin.clicked.connect(signal_sin)
         self.button_square.clicked.connect(signal_square)
         self.button_triangle.clicked.connect(signal_triangle)
-        #-------------------------------------------
+
+        #-----------------VALIDATOR--------------------------
+
+        double_validator = QDoubleValidator()
+        double_validator.setBottom(0.0) #>=0
+
+        self.input_R.setValidator(double_validator)
+        self.input_R2.setValidator(double_validator)
+        self.input_L.setValidator(double_validator)
+        self.input_C.setValidator(double_validator)
         
         # so they dont stretch vertically
         self.right_panel.addStretch()
