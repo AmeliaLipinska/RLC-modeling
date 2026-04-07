@@ -1,8 +1,10 @@
 import os
 from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, 
-                             QLabel, QLineEdit, QFormLayout, QGroupBox)
+                             QLabel, QLineEdit, QFormLayout, QGroupBox, QPushButton)
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
+
+from signals import signal_sin, signal_square, signal_triangle
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -10,6 +12,8 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Symulator RLC - Parametry")
         self.resize(1200, 600) # a wide window for starters
+
+        #---------------------PICTURE----------------------
 
        # main widget 
         central_widget = QWidget() #creating an epty widget
@@ -30,6 +34,8 @@ class MainWindow(QMainWindow):
         
         # adding the pic to the main alignment (stretch) = 3 (makes it 75%)
         self.main_layout.addWidget(self.label_picture, stretch=5)
+
+        #------------------------INPUT-------------------------
 
         # right side of the window
         # creating vertical setting for the right panel
@@ -55,6 +61,26 @@ class MainWindow(QMainWindow):
         
         # adding the group of right panel
         self.right_panel.addWidget(self.group_box)
+
+        #----------------INPUT SIGANLS BOXES----------------
+        self.signal_group = QGroupBox("Typ sygnału")
+        self.signal_layout = QVBoxLayout()
+
+        self.button_sin = QPushButton("Sygnał harmoniczny")
+        self.button_square = QPushButton("Sygnał prostokątny")
+        self.button_triangle = QPushButton("Sygnał trójkątny")
+
+        self.signal_layout.addWidget(self.button_sin)
+        self.signal_layout.addWidget(self.button_square)
+        self.signal_layout.addWidget(self.button_triangle)
+
+        self.signal_group.setLayout(self.signal_layout)
+        self.right_panel.addWidget(self.signal_group)
+
+        self.button_sin.clicked.connect(signal_sin)
+        self.button_square.clicked.connect(signal_square)
+        self.button_triangle.clicked.connect(signal_triangle)
+        #-------------------------------------------
         
         # so they dont stretch vertically
         self.right_panel.addStretch()
