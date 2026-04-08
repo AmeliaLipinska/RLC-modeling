@@ -2,7 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 
-def circuit_model(L,R2,C,R,x0):
+def circuit_model(L,R2,C,R,x0,x,u):
+    #state-space model
+
     model_A = [[0,0],[0,-1/C * (1/R + 1/R2)]]
 
     model_B = [[1/L],[1/(C*R2)]]
@@ -11,7 +13,18 @@ def circuit_model(L,R2,C,R,x0):
 
     model_D = 0
 
-    return
+    dxdt = model_A @ x + model_B.flatten() * u
+    y = model_C * x + model_D
+
+    #transmittance G(s)
+
+    numerator = R
+    denominator = [C*R*R2,R2+R]
+
+    transmittance = numerator/denominator
+
+
+    return dxdt, y, transmittance
 
 
 
