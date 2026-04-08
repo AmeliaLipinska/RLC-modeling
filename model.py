@@ -21,7 +21,7 @@ def circuit_model(L,R2,C,R,x0,x,u):
     numerator = R
     denominator = [C*R*R2,R2+R]
 
-    transmittance = numerator/denominator
+    transmittance = numerator/denominator #do poprawki
 
 
     return dxdt, y, transmittance
