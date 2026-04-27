@@ -14,10 +14,11 @@ def signal_square(amp, freq, duration, offset=0):
      print ("clicked prostokatny")
      
      def logic(t):
-          if t <= duration:
-               return lambda t: amp * signal.square(2 * np.pi * freq * t, width = 0.5) + offset
-          else:
-               return offset
+          return np.where(
+               t <= duration,
+               (amp * signal.square(2 * np.pi * freq * t, duty = 0.5) + offset),
+               offset
+          )
      return logic
 
 def signal_triangle(amp, freq, offset=0):

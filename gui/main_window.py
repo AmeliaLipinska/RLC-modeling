@@ -8,6 +8,8 @@ from signals import signal_sin, signal_square, signal_triangle
 
 from PySide6.QtGui import QDoubleValidator
 
+import numpy as np
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -82,6 +84,7 @@ class MainWindow(QMainWindow):
 
         self.input_A=QLineEdit()
         self.input_F=QLineEdit()
+        self.input_D=QLineEdit()
 
         self.signal_layout.addWidget(self.button_sin)
         self.signal_layout.addWidget(self.button_square)
@@ -92,26 +95,28 @@ class MainWindow(QMainWindow):
 
         self.signal_layout.addWidget(QLabel("Czestotliwosc [Hz]:"))
         self.signal_layout.addWidget(self.input_F)
+
+        self.signal_layout.addWidget(QLabel("Czas trwania protokątnego [s]:"))
+        self.signal_layout.addWidget(self.input_D)
         
         self.signal_group.setLayout(self.signal_layout)
         self.right_panel.addWidget(self.signal_group)
 
-        self.button_sin.clicked.connect(signal_sin)
-        self.button_square.clicked.connect(signal_square)
-        self.button_triangle.clicked.connect(signal_triangle)
+        self.button_sin.clicked.connect(self.clicked_on_sin)
+        self.button_square.clicked.connect(self.clicked_on_square)
+        self.button_triangle.clicked.connect(self.clicked_on_triangle)
 
         #-----------------SIMULATION OF INPUT SIGNAL-------------
-
         import time
         from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
         from matplotlib.figure import Figure
 
+        #setting the back
         self.input_figure = Figure() #creating a clear paper
         self.canvas_input = FigureCanvas(self.input_figure)#allows to use figure in gui
         self.ax_input = self.input_figure.add_subplot(111) #creating axes (111)-rzad, kolumna, wykres - jeden wykres na całej figurze
 
         #-------------------SIMULATION OF OUTPUT SIGNAL------------
-
         self.output_figure = Figure()
         self.canvas_output = FigureCanvas(self.output_figure)
         self.ax_output = self.output_figure.add_subplot(111)
@@ -130,11 +135,49 @@ class MainWindow(QMainWindow):
         self.input_C.setValidator(double_validator)
         self.input_A.setValidator(double_validator)
         self.input_F.setValidator(double_validator)
+        self.input_D.setValidator(double_validator)
         
         # so they dont stretch vertically
         self.right_panel.addStretch()
 
         self.top_layout.addLayout(self.right_panel, stretch=1)
+
+    #plotting
+    def input_plot(self, signal_function):
+        t=np.linspace(0,1,1000)
+        y=signal_function(t)
+             
+        #drawing the signal
+        self.ax_input.clear()
+        self.ax_input.plot(t, y)
+        self.ax_input.set_title("INPUT SIGNAL")
+        self.canvas_input.draw()
+
+    #connecting the button
+    def clicked_on_sin(self):
+        amp=float(self.input_A.text()) #input_A->text->float
+        freq=float(self.input_F.text())
+
+        f=signal_sin(amp, freq)
+
+        self.input_plot(f)
+    
+    def clicked_on_square(self):
+        amp=float(self.input_A.text())
+        freq=float(self.input_F.text())
+        dura=float(self.input_D.text())
+
+        f=signal_square(amp, freq, dura)
+
+        self.input_plot(f)
+    
+    def clicked_on_triangle(self):
+        amp=float(self.input_A.text())
+        freq=float(self.input_F.text())
+
+        f=signal_triangle(amp, freq)
+
+        self.input_plot(f)
 
     # funkcja odświeżająca obrazek przy zmianie rozmiaru okna
     def resizeEvent(self, event):
