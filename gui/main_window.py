@@ -21,7 +21,14 @@ class MainWindow(QMainWindow):
         central_widget = QWidget() #creating an epty widget
         self.setCentralWidget(central_widget) #seting this widget as a main-central widget
         #everything in aplication will be created in central widget
-        self.main_layout = QHBoxLayout(central_widget)#lays out widgets in a horizontal row(every vidget created in central will be horisontaly displayed nex to each other)
+        self.main_layout = QVBoxLayout(central_widget)#lays out widgets in a horizontal row(every vidget created in central will be horisontaly displayed nex to each other)
+
+        #making an upper and lower layout
+        self.top_layout = QHBoxLayout()
+        self.main_layout.addLayout(self.top_layout, stretch=2)
+
+        self.bottom_layout =QHBoxLayout()
+        self.main_layout.addLayout(self.bottom_layout, stretch=1)
 
         #left side of the window
         self.label_picture = QLabel()
@@ -34,8 +41,8 @@ class MainWindow(QMainWindow):
         #loads the pic to an object
         self.original_pixmap = QPixmap(pic_path)#QPixmap is an image container
         
-        # adding the pic to the main alignment (stretch) = 3 (makes it 75%)
-        self.main_layout.addWidget(self.label_picture, stretch=5)
+        # adding the pic to the top alignment (stretch) = 3 (makes it 75%)
+        self.top_layout.addWidget(self.label_picture, stretch=5)
 
         #------------------------INPUT-------------------------
 
@@ -101,11 +108,13 @@ class MainWindow(QMainWindow):
         self.input_R2.setValidator(double_validator)
         self.input_L.setValidator(double_validator)
         self.input_C.setValidator(double_validator)
+        self.input_A.setValidator(double_validator)
+        self.input_F.setValidator(double_validator)
         
         # so they dont stretch vertically
         self.right_panel.addStretch()
 
-        self.main_layout.addLayout(self.right_panel, stretch=1)
+        self.top_layout.addLayout(self.right_panel, stretch=1)
 
     # funkcja odświeżająca obrazek przy zmianie rozmiaru okna
     def resizeEvent(self, event):

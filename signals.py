@@ -2,6 +2,8 @@ import sys
 from scipy import signal
 import numpy as np
 
+##return lambda t zwraca f(t) zamiast wartosci
+
 def signal_sin(amp, freq, offset=0):
      print ("clicked harmoniczny")
 
