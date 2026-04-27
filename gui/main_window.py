@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Symulator RLC")
         self.resize(1200, 600) # a wide window for starters
 
-        #---------------------PICTURE----------------------
+       #---------------------WINDOW-----------------
 
        # main widget 
         central_widget = QWidget() #creating an epty widget
@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
         self.bottom_layout =QHBoxLayout()
         self.main_layout.addLayout(self.bottom_layout, stretch=1)
 
+        #---------------------PICTURE----------------------
         #left side of the window
         self.label_picture = QLabel()
         self.label_picture.setAlignment(Qt.AlignCenter) #centered on the left
@@ -99,6 +100,25 @@ class MainWindow(QMainWindow):
         self.button_square.clicked.connect(signal_square)
         self.button_triangle.clicked.connect(signal_triangle)
 
+        #-----------------SIMULATION OF INPUT SIGNAL-------------
+
+        import time
+        from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+        from matplotlib.figure import Figure
+
+        self.input_figure = Figure() #creating a clear paper
+        self.canvas_input = FigureCanvas(self.input_figure)#allows to use figure in gui
+        self.ax_input = self.input_figure.add_subplot(111) #creating axes (111)-rzad, kolumna, wykres - jeden wykres na całej figurze
+
+        #-------------------SIMULATION OF OUTPUT SIGNAL------------
+
+        self.output_figure = Figure()
+        self.canvas_output = FigureCanvas(self.output_figure)
+        self.ax_output = self.output_figure.add_subplot(111)
+
+        #adding to gui
+        self.bottom_layout.addWidget(self.canvas_input)
+        self.bottom_layout.addWidget(self.canvas_output)
         #-----------------VALIDATOR--------------------------
 
         double_validator = QDoubleValidator()
