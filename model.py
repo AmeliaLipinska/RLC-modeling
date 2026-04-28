@@ -2,14 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 
-def circuit_model(L,R2,C,R,x0,x,u):
+def circuit_model(t,x,u,parameters):
     #state-space model
 
-    model_A = np.array[[0,0],[0,-1/C * (1/R + 1/R2)]]
+    L, R2,C,R=parameters
 
-    model_B = np.array[[1/L],[1/(C*R2)]]
+    model_A = np.array([[0,-1/L],[1/C,-1/C * (1/R + 1/R2)]])
 
-    model_C = np.array[0,1]
+    model_B = np.array([[1/L],[0]])
+
+    model_C = np.array([[0,1]])
 
     model_D = 0
 
@@ -20,12 +22,14 @@ def circuit_model(L,R2,C,R,x0,x,u):
     # @-operator mnożenia macierzy 
 
     dxdt = model_A @ x + model_B.flatten() * u
-    y = model_C * x + model_D
+    y = model_C @ x + model_D
 
     #transmittance G(s)
 
-    numerator = R
-    denominator = [C*R*R2,R2+R]
+    #numerator = R
+    #denominator = [C*R*R2,R2+R]
+    numerator=2
+    denominator=2
 
     transmittance = numerator/denominator #do poprawki
 

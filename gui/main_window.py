@@ -127,6 +127,7 @@ class MainWindow(QMainWindow):
         #-----------------VALIDATOR--------------------------
 
         double_validator = QDoubleValidator()
+        double_validator.setNotation(QDoubleValidator.StandardNotation)
         double_validator.setBottom(0.0) #>=0
 
         self.input_R.setValidator(double_validator)
@@ -153,32 +154,92 @@ class MainWindow(QMainWindow):
         self.ax_input.set_title("INPUT SIGNAL")
         self.canvas_input.draw()
 
+    def output_plot(self, t_param, y_param, amplitude):
+        self.ax_output.clear()
+        self.ax_output.plot(t_param, y_param)
+        self.ax_output.set_title("OUTPUT SIGNAL")
+        self.canvas_output.draw()
+
     #connecting the button
     def clicked_on_sin(self):
-        amp=float(self.input_A.text()) #input_A->text->float
-        freq=float(self.input_F.text())
+        amp=float(self.input_A.text().replace(",", ".")) #input_A->text->float
+        freq=float(self.input_F.text().replace(",", "."))
 
         f=signal_sin(amp, freq)
-
+        
+        #input
         self.input_plot(f)
+
+        #output
+        t, y = self.simulation(f)
+
+        self.output_plot(t, y, amp)
     
     def clicked_on_square(self):
-        amp=float(self.input_A.text())
-        freq=float(self.input_F.text())
-        dura=float(self.input_D.text())
+        amp=float(self.input_A.text().replace(",", "."))
+        freq=float(self.input_F.text().replace(",", "."))
+        dura=float(self.input_D.text().replace(",", "."))
 
         f=signal_square(amp, freq, dura)
 
         self.input_plot(f)
     
     def clicked_on_triangle(self):
-        amp=float(self.input_A.text())
-        freq=float(self.input_F.text())
+        amp=float(self.input_A.text().replace(",", "."))
+        freq=float(self.input_F.text().replace(",", "."))
 
         f=signal_triangle(amp, freq)
 
         self.input_plot(f)
 
+    def simulation(self, signal_function):
+        import numpy as np
+        from rk45 import rk45_step
+        from model import circuit_model
+
+        freq=float(self.input_F.text().replace(",", "."))
+
+        if freq > 0:
+            t_end = 5 / freq 
+        else:
+            t_end = 0.1
+
+        #simulation time
+        t=0
+        h=t_end/1000
+
+        # starting state
+        x=np.array([0.0, 0.0])
+
+        #parameters
+        R=float(self.input_R.text().replace(",", "."))
+        R2=float(self.input_R2.text().replace(",", "."))
+        L=float(self.input_L.text().replace(",", "."))
+        C=float(self.input_C.text().replace(",", "."))
+
+        parameters = [L, R2, C, R]
+
+        #saving place for the graph
+
+        t_values=[]
+        y_values=[]
+
+        #simulation
+        while t<t_end:
+            x, error = rk45_step(t, x, h, signal_function, parameters)
+
+            x=np.array(x).flatten()
+
+            from model import circuit_model
+
+            _,y,_=circuit_model(t,x, signal_function(t),parameters)
+
+            t_values.append(t) #adds element to the end of the list
+            y_values.append(np.array(y).flatten()[0])
+
+            t+=h
+        return t_values, y_values
+        
     # funkcja odświeżająca obrazek przy zmianie rozmiaru okna
     def resizeEvent(self, event):
         if not self.original_pixmap.isNull():

@@ -8,8 +8,8 @@ def model(t,x,u,parameters):
     #parameters = [L,R2,C,R]
     L, R2, C, R = parameters
     
-    model_A = np.array([[0,0],[0,-1/C * (1/R + 1/R2)]])
-    model_B = np.array([[1/L],[1/(C*R2)]])
+    model_A = np.array([[0,-1/L],[1/C,-1/C * (1/R + 1/R2)]])
+    model_B = np.array([[1/L],[0]])
 
     #x~ = A*x + B*u
     dxdt = model_A @ x + model_B.flatten() * u
