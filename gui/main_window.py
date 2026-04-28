@@ -59,9 +59,13 @@ class MainWindow(QMainWindow):
 
         # imputs parameters to be edited
         self.input_R = QLineEdit()
+        self.input_R.setText("1000")
         self.input_R2 = QLineEdit()
+        self.input_R2.setText("1000")
         self.input_L = QLineEdit()
+        self.input_L.setText("0,0000001")
         self.input_C = QLineEdit()
+        self.input_C.setText("0,01")
 
         # adding rows to the menu
         self.form_layout.addRow("Rezystancja R [Ω]:", self.input_R)
@@ -83,8 +87,11 @@ class MainWindow(QMainWindow):
         self.button_triangle = QPushButton("Sygnał trójkątny")
 
         self.input_A=QLineEdit()
+        self.input_A.setText("5")
         self.input_F=QLineEdit()
+        self.input_F.setText("5000")
         self.input_D=QLineEdit()
+        self.input_D.setText("100")
 
         self.signal_layout.addWidget(self.button_sin)
         self.signal_layout.addWidget(self.button_square)
@@ -154,7 +161,7 @@ class MainWindow(QMainWindow):
         self.ax_input.set_title("INPUT SIGNAL")
         self.canvas_input.draw()
 
-    def output_plot(self, t_param, y_param, amplitude):
+    def output_plot(self, t_param, y_param):
         self.ax_output.clear()
         self.ax_output.plot(t_param, y_param)
         self.ax_output.set_title("OUTPUT SIGNAL")
@@ -173,7 +180,7 @@ class MainWindow(QMainWindow):
         #output
         t, y = self.simulation(f)
 
-        self.output_plot(t, y, amp)
+        self.output_plot(t, y)
     
     def clicked_on_square(self):
         amp=float(self.input_A.text().replace(",", "."))
@@ -182,7 +189,13 @@ class MainWindow(QMainWindow):
 
         f=signal_square(amp, freq, dura)
 
+        #input
         self.input_plot(f)
+
+        #output
+        t, y=self.simulation(f)
+
+        self.output_plot(t, y)
     
     def clicked_on_triangle(self):
         amp=float(self.input_A.text().replace(",", "."))
@@ -190,7 +203,13 @@ class MainWindow(QMainWindow):
 
         f=signal_triangle(amp, freq)
 
+        #input
         self.input_plot(f)
+
+        #output
+        t, y=self.simulation(f)
+
+        self.output_plot(t, y)
 
     def simulation(self, signal_function):
         import numpy as np
