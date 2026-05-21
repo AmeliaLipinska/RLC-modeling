@@ -91,7 +91,7 @@ class MainWindow(QMainWindow):
         self.input_F=QLineEdit()
         self.input_F.setText("5000")
         self.input_D=QLineEdit()
-        self.input_D.setText("100")
+        self.input_D.setText("0,5")
 
         self.signal_layout.addWidget(self.button_sin)
         self.signal_layout.addWidget(self.button_square)
@@ -103,7 +103,7 @@ class MainWindow(QMainWindow):
         self.signal_layout.addWidget(QLabel("Czestotliwosc [Hz]:"))
         self.signal_layout.addWidget(self.input_F)
 
-        self.signal_layout.addWidget(QLabel("Czas trwania protokątnego [s]:"))
+        self.signal_layout.addWidget(QLabel("Wypełnienie (0-1):"))
         self.signal_layout.addWidget(self.input_D)
         
         self.signal_group.setLayout(self.signal_layout)
@@ -187,9 +187,9 @@ class MainWindow(QMainWindow):
     def clicked_on_square(self):
         amp=float(self.input_A.text().replace(",", "."))
         freq=float(self.input_F.text().replace(",", "."))
-        dura=float(self.input_D.text().replace(",", "."))
+        duty=float(self.input_D.text().replace(",", "."))
 
-        f=signal_square(amp, freq, dura)
+        f=signal_square(amp, freq, duty)
 
         #input
         self.input_plot(f)

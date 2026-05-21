@@ -10,16 +10,11 @@ def signal_sin(amp, freq, offset=0):
      return lambda t: amp * np.sin(2 * np.pi * freq * t ) + offset
 
 
-def signal_square(amp, freq, duration, offset=0):
+def signal_square(amp, freq, duty, offset=0):
      print ("clicked prostokatny")
      
-     def logic(t):
-          return np.where(
-               t <= duration,
-               (amp * signal.square(2 * np.pi * freq * t, duty = 0.5) + offset),
-               offset
-          )
-     return logic
+     #changes amplitude between 0 and amp
+     return lambda t: (amp / 2) * signal.square(2 * np.pi * freq * t, duty=duty) + (amp / 2) + offset
 
 def signal_triangle(amp, freq, offset=0):
      print("clicked trojkatny")
