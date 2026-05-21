@@ -215,7 +215,7 @@ class MainWindow(QMainWindow):
 
     def simulation(self, signal_function):
         import numpy as np
-        from rk45 import rk45_step, new_h, rk4_step
+        from rk45 import rk4_step
         from model import circuit_model
 
         freq=float(self.input_F.text().replace(",", "."))
@@ -227,7 +227,7 @@ class MainWindow(QMainWindow):
 
         #simulation time
         t=0
-        h=t_end/100
+        h=t_end/1000
 
         # starting state
         x=np.array([0.0, 0.0])
@@ -245,26 +245,13 @@ class MainWindow(QMainWindow):
         t_values=[]
         y_values=[]
 
-        #simulation rk45
+        #simulation rk4
         while t < t_end:
-            x_new, error = rk45_step(t, x, h, signal_function, parameters)
-            
-            # Accept step and adapt h
-            x = np.array(x_new).flatten()
-            h = new_h(h, error)          # ← this line is missing in your code
-            h = max(h, t_end / 100000)   # prevent h from going to zero
-            
+            x = rk4_step(t, x, h, signal_function, parameters)
             _, y, _ = circuit_model(t, x, signal_function(t), parameters)
             t_values.append(t)
-            y_values.append(np.array(y).flatten()[0])
+            y_values.append(float(y.flatten()[0]))
             t += h
-
-        # while t < t_end:
-        #     x = rk4_step(t, x, h, signal_function, parameters)
-        #     _, y, _ = circuit_model(t, x, signal_function(t), parameters)
-        #     t_values.append(t)
-        #     y_values.append(float(y.flatten()[0]))
-        #     t += h
 
         return t_values, y_values
         
