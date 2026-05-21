@@ -63,9 +63,9 @@ class MainWindow(QMainWindow):
         self.input_R2 = QLineEdit()
         self.input_R2.setText("1000")
         self.input_L = QLineEdit()
-        self.input_L.setText("0,0000001")
+        self.input_L.setText("0,33")
         self.input_C = QLineEdit()
-        self.input_C.setText("0,01")
+        self.input_C.setText("0,0000001")
 
         # adding rows to the menu
         self.form_layout.addRow("Rezystancja R [Ω]:", self.input_R)
@@ -158,12 +158,14 @@ class MainWindow(QMainWindow):
         #drawing the signal
         self.ax_input.clear()
         self.ax_input.plot(t, y)
+        self.ax_output.grid(True)
         self.ax_input.set_title("INPUT SIGNAL")
         self.canvas_input.draw()
 
     def output_plot(self, t_param, y_param):
         self.ax_output.clear()
         self.ax_output.plot(t_param, y_param)
+        self.ax_output.grid(True)
         self.ax_output.set_title("OUTPUT SIGNAL")
         self.canvas_output.draw()
 
@@ -213,19 +215,19 @@ class MainWindow(QMainWindow):
 
     def simulation(self, signal_function):
         import numpy as np
-        from rk45 import rk45_step
+        from rk45 import rk45_step, new_h, rk4_step
         from model import circuit_model
 
         freq=float(self.input_F.text().replace(",", "."))
 
         if freq > 0:
-            t_end = 5 / freq 
+            t_end = 10/freq
         else:
             t_end = 0.1
 
         #simulation time
         t=0
-        h=t_end/1000
+        h=t_end/100
 
         # starting state
         x=np.array([0.0, 0.0])
@@ -243,20 +245,27 @@ class MainWindow(QMainWindow):
         t_values=[]
         y_values=[]
 
-        #simulation
-        while t<t_end:
-            x, error = rk45_step(t, x, h, signal_function, parameters)
-
-            x=np.array(x).flatten()
-
-            from model import circuit_model
-
-            _,y,_=circuit_model(t,x, signal_function(t),parameters)
-
-            t_values.append(t) #adds element to the end of the list
+        #simulation rk45
+        while t < t_end:
+            x_new, error = rk45_step(t, x, h, signal_function, parameters)
+            
+            # Accept step and adapt h
+            x = np.array(x_new).flatten()
+            h = new_h(h, error)          # ← this line is missing in your code
+            h = max(h, t_end / 100000)   # prevent h from going to zero
+            
+            _, y, _ = circuit_model(t, x, signal_function(t), parameters)
+            t_values.append(t)
             y_values.append(np.array(y).flatten()[0])
+            t += h
 
-            t+=h
+        # while t < t_end:
+        #     x = rk4_step(t, x, h, signal_function, parameters)
+        #     _, y, _ = circuit_model(t, x, signal_function(t), parameters)
+        #     t_values.append(t)
+        #     y_values.append(float(y.flatten()[0]))
+        #     t += h
+
         return t_values, y_values
         
     # funkcja odświeżająca obrazek przy zmianie rozmiaru okna
