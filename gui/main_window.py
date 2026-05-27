@@ -105,6 +105,11 @@ class MainWindow(QMainWindow):
 
         self.signal_layout.addWidget(QLabel("Wypełnienie (0-1):"))
         self.signal_layout.addWidget(self.input_D)
+
+        self.input_T = QLineEdit()
+        self.input_T.setText("0,002")
+        self.signal_layout.addWidget(QLabel("Czas symulacji [s]:"))
+        self.signal_layout.addWidget(self.input_T)
         
         self.signal_group.setLayout(self.signal_layout)
         self.right_panel.addWidget(self.signal_group)
@@ -144,6 +149,7 @@ class MainWindow(QMainWindow):
         self.input_A.setValidator(double_validator)
         self.input_F.setValidator(double_validator)
         self.input_D.setValidator(double_validator)
+        self.input_T.setValidator(double_validator)
         
         # so they dont stretch vertically
         self.right_panel.addStretch()
@@ -151,8 +157,8 @@ class MainWindow(QMainWindow):
         self.top_layout.addLayout(self.right_panel, stretch=1)
 
     #plotting
-    def input_plot(self, signal_function):
-        t=np.linspace(0,1,1000)
+    def input_plot(self, signal_function, t_end):
+        t=np.linspace(0,t_end,1000)
         y=signal_function(t)
              
         #drawing the signal
@@ -175,13 +181,10 @@ class MainWindow(QMainWindow):
         freq=float(self.input_F.text().replace(",", "."))
 
         f=signal_sin(amp, freq)
-        
-        #input
-        self.input_plot(f)
 
-        #output
+        #output/input
         t, y = self.simulation(f)
-
+        self.input_plot(f, t[-1])
         self.output_plot(t, y)
     
     def clicked_on_square(self):
@@ -191,12 +194,9 @@ class MainWindow(QMainWindow):
 
         f=signal_square(amp, freq, duty)
 
-        #input
-        self.input_plot(f)
-
-        #output
+        #output/input
         t, y=self.simulation(f)
-
+        self.input_plot(f, t[-1])
         self.output_plot(t, y)
     
     def clicked_on_triangle(self):
@@ -205,12 +205,9 @@ class MainWindow(QMainWindow):
 
         f=signal_triangle(amp, freq)
 
-        #input
-        self.input_plot(f)
-
-        #output
+        #output/input
         t, y=self.simulation(f)
-
+        self.input_plot(f, t[-1])
         self.output_plot(t, y)
 
     def simulation(self, signal_function):
@@ -220,10 +217,7 @@ class MainWindow(QMainWindow):
 
         freq=float(self.input_F.text().replace(",", "."))
 
-        if freq > 0:
-            t_end = 10/freq
-        else:
-            t_end = 0.1
+        t_end = float(self.input_T.text().replace(",", "."))
 
         #simulation time
         t=0

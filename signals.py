@@ -14,7 +14,13 @@ def signal_square(amp, freq, duty, offset=0):
      print ("clicked prostokatny")
      
      #changes amplitude between 0 and amp
-     return lambda t: (amp / 2) * signal.square(2 * np.pi * freq * t, duty=duty) + (amp / 2) + offset
+     def logic(t):
+          return np.where(
+               t <= duty / freq,
+               amp,
+               offset
+          )
+     return logic
 
 def signal_triangle(amp, freq, offset=0):
      print("clicked trojkatny")
