@@ -1,5 +1,5 @@
 import os
-from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, 
+from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout, QGridLayout, QVBoxLayout, 
                              QLabel, QLineEdit, QFormLayout, QGroupBox, QPushButton)
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Symulator RLC")
-        self.resize(1200, 600) # a wide window for starters
+        self.resize(1700, 900) # a wide window for starters
 
        #---------------------WINDOW-----------------
 
@@ -24,13 +24,12 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget) #seting this widget as a main-central widget
         #everything in aplication will be created in central widget
         self.main_layout = QVBoxLayout(central_widget)#lays out widgets in a horizontal row(every vidget created in central will be horisontaly displayed nex to each other)
-
-        #making an upper and lower layout
+        
         self.top_layout = QHBoxLayout()
-        self.main_layout.addLayout(self.top_layout, stretch=2)
-
-        self.bottom_layout =QHBoxLayout()
-        self.main_layout.addLayout(self.bottom_layout, stretch=1)
+        self.plot_grid = QGridLayout()
+        
+        self.main_layout.addLayout(self.top_layout, stretch=3)
+        self.main_layout.addLayout(self.plot_grid)
 
         #---------------------PICTURE----------------------
         #left side of the window
@@ -133,9 +132,20 @@ class MainWindow(QMainWindow):
         self.canvas_output = FigureCanvas(self.output_figure)
         self.ax_output = self.output_figure.add_subplot(111)
 
-        #adding to gui
-        self.bottom_layout.addWidget(self.canvas_input)
-        self.bottom_layout.addWidget(self.canvas_output)
+        # -------------------BODE PLOT CANVAS-----------------------
+        self.fig_mag = Figure() # Shorter height
+        self.canvas_mag = FigureCanvas(self.fig_mag)
+        self.ax_mag = self.fig_mag.add_subplot(111)
+
+        self.fig_phase = Figure()
+        self.canvas_phase = FigureCanvas(self.fig_phase)
+        self.ax_phase = self.fig_phase.add_subplot(111)
+
+        # Add to the grid (Row, Column)
+        self.plot_grid.addWidget(self.canvas_input, 0, 0)   # Top-Left
+        self.plot_grid.addWidget(self.canvas_output, 0, 1)  # Top-Right
+        self.plot_grid.addWidget(self.canvas_mag, 1, 0)     # Bottom-Left (Under Input)
+        self.plot_grid.addWidget(self.canvas_phase, 1, 1)   # Bottom-Right (Under Output)
         #-----------------VALIDATOR--------------------------
 
         double_validator = QDoubleValidator()
@@ -156,6 +166,8 @@ class MainWindow(QMainWindow):
 
         self.top_layout.addLayout(self.right_panel, stretch=1)
 
+
+
     #plotting
     def input_plot(self, signal_function, t_end):
         t=np.linspace(0,t_end,1000)
@@ -175,6 +187,44 @@ class MainWindow(QMainWindow):
         self.ax_output.set_title("OUTPUT SIGNAL")
         self.canvas_output.draw()
 
+    def plot_bode(self):
+        from scipy import signal
+        import numpy as np
+
+        R = float(self.input_R.text().replace(",", "."))
+        R2 = float(self.input_R2.text().replace(",", "."))
+        C = float(self.input_C.text().replace(",", "."))
+        
+        # Transfer Function coefficients: G(s) = num / den
+        # G(s) = (R / (R + R2)) / ( (R*R2*C)/(R+R2) * s + 1 )
+        num_coeff = R / (R + R2)
+        den_coeff = (R * R2 * C) / (R + R2)
+        
+        num = [num_coeff]
+        den = [den_coeff, 1]
+
+        sys = signal.lti(num, den)
+        w = np.logspace(1, 6, 500) 
+        w, mag, phase = signal.bode(sys, w=w)
+        freq_hz = w / (2 * np.pi)
+
+        # Magnitude Plot
+        self.ax_mag.clear()
+        self.ax_mag.semilogx(freq_hz, mag, color='crimson')
+        self.ax_mag.grid(True, which="both", ls="--")
+        self.ax_mag.set_ylabel("Mag [dB]")
+        self.fig_mag.tight_layout()
+        self.canvas_mag.draw()
+
+        # Phase Plot
+        self.ax_phase.clear()
+        self.ax_phase.semilogx(freq_hz, phase, color='royalblue')
+        self.ax_phase.grid(True, which="both", ls="--")
+        self.ax_phase.set_ylabel("Phase [deg]")
+        self.ax_phase.set_xlabel("Frequency [Hz]")
+        self.fig_phase.tight_layout()
+        self.canvas_phase.draw()
+
     #connecting the button
     def clicked_on_sin(self):
         amp=float(self.input_A.text().replace(",", ".")) #input_A->text->float
@@ -186,6 +236,7 @@ class MainWindow(QMainWindow):
         t, y = self.simulation(f)
         self.input_plot(f, t[-1])
         self.output_plot(t, y)
+        self.plot_bode()
     
     def clicked_on_square(self):
         amp=float(self.input_A.text().replace(",", "."))
@@ -198,6 +249,7 @@ class MainWindow(QMainWindow):
         t, y=self.simulation(f)
         self.input_plot(f, t[-1])
         self.output_plot(t, y)
+        self.plot_bode()
     
     def clicked_on_triangle(self):
         amp=float(self.input_A.text().replace(",", "."))
@@ -209,6 +261,7 @@ class MainWindow(QMainWindow):
         t, y=self.simulation(f)
         self.input_plot(f, t[-1])
         self.output_plot(t, y)
+        self.plot_bode()
 
     def simulation(self, signal_function):
         import numpy as np
