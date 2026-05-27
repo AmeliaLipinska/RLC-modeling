@@ -88,7 +88,7 @@ class MainWindow(QMainWindow):
         self.input_A=QLineEdit()
         self.input_A.setText("5")
         self.input_F=QLineEdit()
-        self.input_F.setText("5000")
+        self.input_F.setText("500")
         self.input_D=QLineEdit()
         self.input_D.setText("0,5")
 
@@ -106,7 +106,7 @@ class MainWindow(QMainWindow):
         self.signal_layout.addWidget(self.input_D)
 
         self.input_T = QLineEdit()
-        self.input_T.setText("0,002")
+        self.input_T.setText("0,01")
         self.signal_layout.addWidget(QLabel("Czas symulacji [s]:"))
         self.signal_layout.addWidget(self.input_T)
         
@@ -274,10 +274,10 @@ class MainWindow(QMainWindow):
 
         #simulation time
         t=0.0
-        h=1e-5
-
-        total_steps = int(np.ceil(t_end / h))
-
+        
+        total_steps = 5000
+        h= t_end/total_steps
+        
         # starting state
         x=np.array([0.0, 0.0])
 
