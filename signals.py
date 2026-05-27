@@ -25,4 +25,4 @@ def signal_square(amp, freq, duty, offset=0):
 def signal_triangle(amp, freq, offset=0):
      print("clicked trojkatny")
 
-     return lambda t: amp * signal.sawtooth(2 * np.pi * freq * t) + offset
+     return lambda t: amp * signal.sawtooth(2 * np.pi * freq * t, width=0.5) + offset

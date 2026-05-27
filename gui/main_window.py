@@ -220,8 +220,10 @@ class MainWindow(QMainWindow):
         t_end = float(self.input_T.text().replace(",", "."))
 
         #simulation time
-        t=0
-        h=t_end/1000
+        t=0.0
+        h=1e-5
+
+        total_steps = int(np.ceil(t_end / h))
 
         # starting state
         x=np.array([0.0, 0.0])
@@ -236,16 +238,24 @@ class MainWindow(QMainWindow):
 
         #saving place for the graph
 
-        t_values=[]
-        y_values=[]
+        t_values = np.zeros(total_steps)
+        y_values= np.zeros(total_steps)
 
         #simulation rk4
-        while t < t_end:
+        for i in range(total_steps):
             x = rk4_step(t, x, h, signal_function, parameters)
             _, y, _ = circuit_model(t, x, signal_function(t), parameters)
-            t_values.append(t)
-            y_values.append(float(y.flatten()[0]))
+            t_values[i] = t
+            y_values[i]=(float(y.flatten()[0]))
             t += h
+
+        if total_steps > 2000:
+            downsample_factor = total_steps // 2000
+            t_values = t_values[::downsample_factor].tolist()
+            y_values = y_values[::downsample_factor].tolist()
+        else:
+            t_values = t_values.tolist()
+            y_values = y_values.tolist()
 
         return t_values, y_values
         

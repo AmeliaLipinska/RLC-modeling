@@ -7,9 +7,9 @@ def circuit_model(t,x,u,parameters):
 
     L, R2,C,R=parameters
 
-    model_A = np.array([[0,-1/L],[1/C,-1/C * (1/R + 1/R2)]])
+    model_A = np.array([[0, 0],[0,-1/C * (1/R + 1/R2)]])
 
-    model_B = np.array([[1/L],[0]])
+    model_B = np.array([[1/L],[1/C*R2]])
 
     model_C = np.array([[0,1]])
 
