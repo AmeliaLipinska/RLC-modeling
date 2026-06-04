@@ -169,7 +169,7 @@ class MainWindow(QMainWindow):
 
 
     #plotting
-    def input_plot(self, signal_function, t_end):
+    def input_plot(self, signal_function, t_end, start_time=0):
         t=np.linspace(0,t_end,1000)
         y=signal_function(t)
              
@@ -243,11 +243,13 @@ class MainWindow(QMainWindow):
         freq=float(self.input_F.text().replace(",", "."))
         duty=float(self.input_D.text().replace(",", "."))
 
-        f=signal_square(amp, freq, duty)
+        delay = 0.0001
+
+        f=signal_square(amp, freq, duty, start_time=delay)
 
         #output/input
         t, y=self.simulation(f)
-        self.input_plot(f, t[-1])
+        self.input_plot(f, t[-1], start_time = delay)
         self.output_plot(t, y)
         self.plot_bode()
     
