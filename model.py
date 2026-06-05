@@ -19,20 +19,13 @@ def circuit_model(t,x,u,parameters):
     # gdzie x1=prąd cewki, 
     # x2=napięcie na rezystorze=y(t)
 
-    # @-operator mnożenia macierzy 
-
     dxdt = model_A @ x + model_B.flatten() * u
     y = model_C @ x + model_D
 
-    #transmittance G(s)
+    numerator=R / (R + R2)
+    denominator=(R * R2 * C) / (R + R2)
 
-    #numerator = R
-    #denominator = [C*R*R2,R2+R]
-    numerator=2
-    denominator=2
-
-    transmittance = numerator/denominator #do poprawki
-
+    transmittance = numerator/denominator 
 
     return dxdt, y, transmittance
 

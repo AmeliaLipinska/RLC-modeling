@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Symulator RLC")
-        self.resize(1700, 900) # a wide window for starters
+        self.resize(1700, 900)
 
        #---------------------WINDOW-----------------
 
@@ -133,7 +133,7 @@ class MainWindow(QMainWindow):
         self.ax_output = self.output_figure.add_subplot(111)
 
         # -------------------BODE PLOT CANVAS-----------------------
-        self.fig_mag = Figure() # Shorter height
+        self.fig_mag = Figure()
         self.canvas_mag = FigureCanvas(self.fig_mag)
         self.ax_mag = self.fig_mag.add_subplot(111)
 
@@ -141,7 +141,7 @@ class MainWindow(QMainWindow):
         self.canvas_phase = FigureCanvas(self.fig_phase)
         self.ax_phase = self.fig_phase.add_subplot(111)
 
-        # Add to the grid (Row, Column)
+        # adding to the grid
         self.plot_grid.addWidget(self.canvas_input, 0, 0)   # Top-Left
         self.plot_grid.addWidget(self.canvas_output, 0, 1)  # Top-Right
         self.plot_grid.addWidget(self.canvas_mag, 1, 0)     # Bottom-Left (Under Input)
@@ -176,7 +176,7 @@ class MainWindow(QMainWindow):
         #drawing the signal
         self.ax_input.clear()
         self.ax_input.plot(t, y)
-        self.ax_output.grid(True)
+        self.ax_input.grid(True)
         self.ax_input.set_title("INPUT SIGNAL")
         self.canvas_input.draw()
 
