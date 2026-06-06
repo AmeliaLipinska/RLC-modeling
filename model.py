@@ -15,17 +15,17 @@ def circuit_model(t,x,u,parameters):
 
     model_D = 0
 
-    # x to wekror stanu x=[x1, x2] 
-    # gdzie x1=prąd cewki, 
-    # x2=napięcie na rezystorze=y(t)
+    # x to wektor stanu x=[x1, x2] 
+    # gdzie x1=prad cewki, 
+    # x2=napiecie na rezystorze=y(t)
 
     dxdt = model_A @ x + model_B.flatten() * u
     y = model_C @ x + model_D
 
-    numerator=R / (R + R2)
-    denominator=(R * R2 * C) / (R + R2)
+    numerator= [1]
+    denominator= [C * R2, 1 + R2/R]
 
-    transmittance = numerator/denominator 
+    transmittance = signal.TransferFunction(numerator, denominator) 
 
     return dxdt, y, transmittance
 

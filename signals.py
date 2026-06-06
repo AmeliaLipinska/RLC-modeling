@@ -2,7 +2,7 @@ import sys
 from scipy import signal
 import numpy as np
 
-##return lambda t zwraca f(t) zamiast wartosci
+# return lambda t zwraca f(t) zamiast wartosci
 
 def signal_sin(amp, freq, offset=0):
      print ("clicked harmoniczny")
@@ -16,7 +16,7 @@ def signal_square(amp, freq, duty, start_time, offset=0):
      duration = duty/freq
      end_time = start_time + duration
 
-     #changes amplitude between 0 and amp
+     #zmiana amplitudy sygnalu miedzy 0 a zadana amplituda amp
      def logic(t):
           return np.where(
                (t >= start_time) & (t <= end_time),
