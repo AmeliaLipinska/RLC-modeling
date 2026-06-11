@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Symulator RLC")
-        self.resize(1700, 900)
+        self.resize(1400, 900)
 
        #---------------------WINDOW-----------------
 
@@ -178,6 +178,8 @@ class MainWindow(QMainWindow):
         self.ax_input.plot(t, y)
         self.ax_input.grid(True)
         self.ax_input.set_title("INPUT SIGNAL")
+        self.ax_input.set_xlabel("t (s)")
+        self.ax_input.set_ylabel("Amplituda (V)")
         self.canvas_input.draw()
 
     def output_plot(self, t_param, y_param):
@@ -185,6 +187,8 @@ class MainWindow(QMainWindow):
         self.ax_output.plot(t_param, y_param)
         self.ax_output.grid(True)
         self.ax_output.set_title("OUTPUT SIGNAL")
+        self.ax_output.set_xlabel("t (s)")
+        self.ax_output.set_ylabel("Amplituda (V)")
         self.canvas_output.draw()
 
     def plot_bode(self):
@@ -212,7 +216,8 @@ class MainWindow(QMainWindow):
         self.ax_mag.clear()
         self.ax_mag.semilogx(freq_hz, mag, color='crimson')
         self.ax_mag.grid(True, which="both", ls="--")
-        self.ax_mag.set_ylabel("Mag [dB]")
+        self.ax_mag.set_ylabel("Mag [dB]")        
+        self.ax_phase.set_xlabel("Frequency [Hz]")
         self.fig_mag.tight_layout()
         self.canvas_mag.draw()
 
