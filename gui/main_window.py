@@ -199,8 +199,8 @@ class MainWindow(QMainWindow):
         R2 = float(self.input_R2.text().replace(",", "."))
         C = float(self.input_C.text().replace(",", "."))
         
-        # Transfer Function coefficients: G(s) = num / den
-        # G(s) = (R / (R + R2)) / ( (R*R2*C)/(R+R2) * s + 1 )
+        #Transfer Function coefficients: G(s) = num / den
+        #G(s) = (R / (R + R2)) / ( (R*R2*C)/(R+R2) * s + 1 )
         num_coeff = R / (R + R2)
         den_coeff = (R * R2 * C) / (R + R2)
         
